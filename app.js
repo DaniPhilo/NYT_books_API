@@ -1,13 +1,18 @@
 
 
-// Function for fetching all lists
+// Function for fetching all lists:
 const getAllLists = async () => {
-    let request = await fetch('https://api.nytimes.com/svc/books/v3/lists/names.json?api-key=aIIJ5p83TsAOWEXASdgbJYiNjZ1kSNW0');
-    let response = await request.json();
-    return response.results
+    try {
+        let request = await fetch('https://api.nytimes.com/svc/books/v3/lists/names.json?api-key=aIIJ5p83TsAOWEXASdgbJYiNjZ1kSNW0');
+        let response = await request.json();
+        return response.results
+    }
+    catch (error) {
+        console.log(error)
+    }
 }
 
-//Function for displaying all lists
+//Function for displaying all lists:
 const displayAllLists = async (lists) => {
     lists.forEach(list => {
         const main = document.querySelector('main');
@@ -23,18 +28,33 @@ const displayAllLists = async (lists) => {
     })
 }
 
-//Wrapper functions for managing asynchrony
+//Wrapper function for managing asynchrony:
 const getAndDisplayAllLists = async () => {
-    const lists = await getAllLists();
-    await displayAllLists(lists);
+    //If the lists are not in local storage, we have to do the fetch:
+    if (window.localStorage.length < 1) {
+        const lists = await getAllLists();
+        await displayAllLists(lists);
+        //Save lists in local storage, so we didn't have to fetch them next time:
+        localStorage.setItem('lists', JSON.stringify(lists));
+    }
+    //If the lists are in local storage, the fetch is not needed, and we save time:
+    else {
+        const lists = JSON.parse(localStorage.getItem('lists'));
+        displayAllLists(lists);
+    }
 }
 getAndDisplayAllLists();
 
 //Function for fetching one list
 const getOneList = async (id) => {
-    let request = await fetch(`https://api.nytimes.com/svc/books/v3/lists/${id}.json?api-key=aIIJ5p83TsAOWEXASdgbJYiNjZ1kSNW0`);
-    let response = await request.json();
-    return response.results.books
+    try {
+        let request = await fetch(`https://api.nytimes.com/svc/books/v3/lists/${id}.json?api-key=aIIJ5p83TsAOWEXASdgbJYiNjZ1kSNW0`);
+        let response = await request.json();
+        return response.results.books
+    }
+    catch (error) {
+        console.log(error)
+    }
 }
 
 //Function for displaying one list

@@ -1,12 +1,13 @@
 
 
-
+// Function for fetching all lists
 const getAllLists = async () => {
     let request = await fetch('https://api.nytimes.com/svc/books/v3/lists/names.json?api-key=aIIJ5p83TsAOWEXASdgbJYiNjZ1kSNW0');
     let response = await request.json();
     return response.results
 }
 
+//Function for displaying all lists
 const displayAllLists = async (lists) => {
     lists.forEach(list => {
         const main = document.querySelector('main');
@@ -22,19 +23,21 @@ const displayAllLists = async (lists) => {
     })
 }
 
+//Wrapper functions for managing asynchrony
 const getAndDisplayAllLists = async () => {
     const lists = await getAllLists();
     await displayAllLists(lists);
 }
-
 getAndDisplayAllLists();
 
+//Function for fetching one list
 const getOneList = async (id) => {
     let request = await fetch(`https://api.nytimes.com/svc/books/v3/lists/${id}.json?api-key=aIIJ5p83TsAOWEXASdgbJYiNjZ1kSNW0`);
     let response = await request.json();
     return response.results.books
 }
 
+//Function for displaying one list
 const displayOneList = async (list) => {
     list.forEach(book => {
         const main = document.querySelector('main');
@@ -50,6 +53,7 @@ const displayOneList = async (list) => {
     })
 }
 
+//Button event going to clicked list (wrapper function for asynchrony)
 const goToList = async () => {
     let previousDivs = document.querySelectorAll('div');
     [...previousDivs].map(div => div.remove());

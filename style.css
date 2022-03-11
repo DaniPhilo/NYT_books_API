@@ -61,3 +61,10 @@ main {
     width: 50%;
     height: 2rem;
 }
+
+.off {
+    display: none;
+}
+.scaled {
+    display: none;
+}

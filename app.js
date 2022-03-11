@@ -1,7 +1,7 @@
 // *** FIREBASE SETUP ***:
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.6/firebase-app.js";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile, deleteUser, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/9.6.6/firebase-auth.js";
-import { getFirestore, collection, doc, getDoc, getDocs, setDoc, updateDoc, deleteDoc, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/9.6.6/firebase-firestore.js";
+import { getFirestore, collection, doc, getDoc, getDocs, setDoc, updateDoc, deleteDoc, arrayUnion, arrayRemove, query, where, deleteField } from "https://www.gstatic.com/firebasejs/9.6.6/firebase-firestore.js";
 
 const firebaseConfig = {
     apiKey: "AIzaSyCLUor0R1QCzEdIo0FEqH3VUOXWoitujDQ",
@@ -59,10 +59,10 @@ const signUp = async (data) => {
 // Log In function:
 const logIn = async (data) => {
     try {
-        await signInWithEmailAndPassword(auth, data.logInEmail, data.logInPassword)
-            .then(userCredential => {
-                const user = userCredential.user;
-            })
+        await signInWithEmailAndPassword(auth, data.logInEmail, data.logInPassword);
+        await getDoc(doc(db, 'users', data.logInEmail))
+            .then(user => localStorage.setItem('favourites', JSON.stringify(user.data().favourites)));
+
     }
     catch (error) {
         const errorCode = error.code;
@@ -73,9 +73,16 @@ const logIn = async (data) => {
     }
 }
 // Log Out function:
-const logOut = () => {
+const logOut = async () => {
     try {
-        auth.signOut();
+        const favourites = JSON.parse(localStorage.getItem('favourites'));
+        const docRef = await doc(db, 'users', auth.currentUser.email);
+        await updateDoc(docRef, {
+            favourites: favourites
+        })
+        localStorage.clear();
+        await auth.signOut();
+
     }
     catch (error) {
         console.log(error);
@@ -111,27 +118,41 @@ const createBackBtn = () => {
 const addToFav = async (event) => {
     const div = event.target.parentElement.parentElement;
     const title = div.firstChild.innerText;
+    //Replace buttons from book-card with new buttons and trim the spaces:
     const newDiv = div.innerHTML.replace(/<div.+div>/gim, '<button type="button" id="unfav-btn">Fav</button>').replace(/\s\s+/gm, '');
+    //Save favourites in local storage:
     const favourites = JSON.parse(localStorage.getItem('favourites'));
-    favourites.push({ title : title,
-                      HTML : newDiv });
+    favourites.push({
+        title: title,
+        HTML: newDiv
+    });
     localStorage.setItem('favourites', JSON.stringify(favourites))
+    //Update doc in Firestore:
+    const docRef = doc(db, 'users', auth.currentUser.email);
+    await updateDoc(docRef, {
+        favourites: arrayUnion({
+            title: title,
+            HTML: div.innerHTML
+        })
+    });
 }
 
 const removeFromFav = async (event) => {
     const div = event.target.parentElement;
     const title = div.firstChild.innerText;
-    // console.log(title)
+    //Remove card from DOM:
     div.remove();
-
+    //Remove book from local storage:
     const favourites = JSON.parse(localStorage.getItem('favourites'));
     favourites.forEach((book, i) => {
         if (book.title === title) {
             favourites.splice(i, 1);
-            // console.log(book.title);
         }
     })
     localStorage.setItem('favourites', JSON.stringify(favourites));
+    // Remove from Firestore:
+    // const docRef = doc(db, 'users', auth.currentUser.email);
+
 }
 
 //Function for fetching one books list:
@@ -209,14 +230,11 @@ const displayAllLists = async (lists) => {
 //Wrapper function for managing asynchrony:
 const getAndDisplayAllLists = async () => {
     //If the lists are not in local storage, we have to do the fetch:
-    if (window.localStorage.length < 1) {
+    if (window.localStorage.length < 2) {
         const lists = await getAllLists();
         await displayAllLists(lists);
         //Save lists in local storage, so we didn't have to fetch them next time:
         localStorage.setItem('lists', JSON.stringify(lists));
-        //Save space for future favourite books
-        let emptyArray = [];
-        localStorage.setItem('favourites', JSON.stringify(emptyArray));
     }
     //If the lists are in local storage, the fetch is not needed, and we save time:
     else {
@@ -269,12 +287,19 @@ logInForm.addEventListener('submit', async (event) => {
 // Log Out button event:
 logOutBtn.addEventListener('click', () => {
     logOut();
+    //If you log out from "My Profile" page, you have to destroy divs and goBack button, or they appear next time you log in:
+    const previousDivs = document.querySelectorAll('div') || false;
+    if (previousDivs) {
+        previousDivs.forEach(div => div.remove());
+    }
+    const backBtn = document.querySelector('#back-btn') || false;
+    if (backBtn) {
+        backBtn.remove();
+    }
     displaySection.classList.toggle('off');
     launchSection.classList.toggle('off');
     nav.classList.toggle('off');
 });
-
-isUserLogged();
 
 // My Profile button event:
 myProfileBtn.addEventListener('click', () => {
@@ -294,3 +319,5 @@ myProfileBtn.addEventListener('click', () => {
     const buttons = document.querySelectorAll('#unfav-btn');
     [...buttons].forEach(button => button.addEventListener('click', removeFromFav));
 })
+
+isUserLogged();

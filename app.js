@@ -77,9 +77,9 @@ const logOut = () => {
     try {
         auth.signOut();
     }
-    catch(error) {
+    catch (error) {
         console.log(error);
-    }       
+    }
 }
 // Login observer function:
 const isUserLogged = () => {
@@ -92,6 +92,48 @@ const isUserLogged = () => {
         }
     })
 }
+
+// Creating and displaying "Go Back" button:
+const createBackBtn = () => {
+    const btn = document.createElement('button');
+    btn.setAttribute('id', 'back-btn');
+    btn.innerText = 'Go Back';
+    displaySection.insertBefore(btn, displaySection.firstChild);
+    btn.addEventListener('click', () => {
+        const previousDivs = document.querySelectorAll('div');
+        [...previousDivs].forEach(div => div.remove());
+        getAndDisplayAllLists();
+        btn.remove();
+    });
+}
+
+// Add to favourites button event:
+const addToFav = async (event) => {
+    const div = event.target.parentElement.parentElement;
+    const title = div.firstChild.innerText;
+    const newDiv = div.innerHTML.replace(/<div.+div>/gim, '<button type="button" id="unfav-btn">Fav</button>').replace(/\s\s+/gm, '');
+    const favourites = JSON.parse(localStorage.getItem('favourites'));
+    favourites.push({ title : title,
+                      HTML : newDiv });
+    localStorage.setItem('favourites', JSON.stringify(favourites))
+}
+
+const removeFromFav = async (event) => {
+    const div = event.target.parentElement;
+    const title = div.firstChild.innerText;
+    // console.log(title)
+    div.remove();
+
+    const favourites = JSON.parse(localStorage.getItem('favourites'));
+    favourites.forEach((book, i) => {
+        if (book.title === title) {
+            favourites.splice(i, 1);
+            // console.log(book.title);
+        }
+    })
+    localStorage.setItem('favourites', JSON.stringify(favourites));
+}
+
 //Function for fetching one books list:
 const getOneList = async (id) => {
     try {
@@ -108,15 +150,18 @@ const getOneList = async (id) => {
 const displayOneList = async (list) => {
     list.forEach(book => {
         const div = document.createElement('div');
+        div.setAttribute('id', `${list.list_name_encoded}`)
         div.classList.add('book-card');
         div.innerHTML = `<h2>#${book.rank} ${book.title}</h2>
                          <p>${book.author}</p>
                          <img src="${book.book_image}">
                          <p>Weeks on list: ${book.weeks_on_list}</p>
                          <p>${book.description}</p>
-                         <button type="button" class="buy-book-btn">Buy</button>`;
+                         <div id="book-btns"><button type="button" class="buy-book-btn">Buy</button><button type="button" id="fav-btn">Fav</button></div>`;
         displaySection.appendChild(div);
-    })
+        const buttons = document.querySelectorAll('#fav-btn');
+        [...buttons].forEach(button => button.addEventListener('click', addToFav));
+    });
 }
 
 // Wraper function for fetching and displaying the books list (it functions as an event listener)
@@ -169,26 +214,15 @@ const getAndDisplayAllLists = async () => {
         await displayAllLists(lists);
         //Save lists in local storage, so we didn't have to fetch them next time:
         localStorage.setItem('lists', JSON.stringify(lists));
+        //Save space for future favourite books
+        let emptyArray = [];
+        localStorage.setItem('favourites', JSON.stringify(emptyArray));
     }
     //If the lists are in local storage, the fetch is not needed, and we save time:
     else {
         const lists = JSON.parse(localStorage.getItem('lists'));
         displayAllLists(lists);
     }
-}
-
-// Creating and displaying "Go Back" button:
-const createBackBtn = () => {
-    const btn = document.createElement('button');
-    btn.setAttribute('id', 'back-btn');
-    btn.innerText = 'Go Back';
-    displaySection.insertBefore(btn, displaySection.firstChild);
-    btn.addEventListener('click', () => {
-        const previousDivs = document.querySelectorAll('div');
-        [...previousDivs].forEach(div => div.remove());
-        getAndDisplayAllLists();
-        btn.remove();
-    });
 }
 
 // Launch page button events:
@@ -241,3 +275,22 @@ logOutBtn.addEventListener('click', () => {
 });
 
 isUserLogged();
+
+// My Profile button event:
+myProfileBtn.addEventListener('click', () => {
+    const previousDivs = document.querySelectorAll('div');
+    previousDivs.forEach(div => div.remove());
+
+    createBackBtn();
+
+    const favourites = JSON.parse(localStorage.getItem('favourites'));
+    favourites.forEach(book => {
+        const div = document.createElement('div');
+        div.classList.add('favourites-card');
+        div.innerHTML = book.HTML;
+        displaySection.appendChild(div);
+    })
+
+    const buttons = document.querySelectorAll('#unfav-btn');
+    [...buttons].forEach(button => button.addEventListener('click', removeFromFav));
+})

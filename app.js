@@ -121,7 +121,8 @@ const addToFav = async (event) => {
     const div = event.target.parentElement.parentElement;
     const title = div.lastChild.childNodes[1].innerText;
     //Replace buttons from book-card with new buttons and trim the spaces:
-    const newDiv = div.innerHTML.replace(/<div.+div>/gim, '<i class="fa fa-heart" aria-hidden="true"></i>').replace(/\s\s+/gm, '');
+    const newDiv = div.innerHTML.replace(/\s\s+/gm, '').replace(/<div.id="book-btns".+(?=<div)/gim, '<i class="fa fa-heart" aria-hidden="true"></i>');
+    console.log(newDiv)
     //Save favourites in local storage:
     const favourites = JSON.parse(localStorage.getItem('favourites'));
     favourites.push({
@@ -176,13 +177,15 @@ const displayOneList = async (list) => {
         div.setAttribute('id', `${list.list_name_encoded}`)
         div.classList.add('book-card');
         div.innerHTML = `<img src="${book.book_image}">
-        <div id="book-btns"><i class="fa fa-heart" aria-hidden="true"></i><button type="button" class="buy-book-btn">Buy</button></div>
-        <div id="book-info-container">
-        <h2>#${book.rank} ${book.title}</h2>
-                         <p>${book.author}</p>
-                         
-                         <p>Weeks on list: ${book.weeks_on_list}</p>
-                         <p>${book.description}</p>
+                         <div id="book-btns">
+                            <i class="fa fa-heart" aria-hidden="true"></i>
+                            <button type="button" class="buy-book-btn">Buy</button>
+                        </div>
+                         <div id="book-info-container">
+                            <h2>#${book.rank} ${book.title}</h2>
+                            <p>${book.author}</p>
+                            <p>Weeks on list: ${book.weeks_on_list}</p>
+                            <p>${book.description}</p>
                          </div>`;
         displaySection.appendChild(div);
 

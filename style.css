@@ -11,14 +11,16 @@ body {
     overflow-y: auto;
 }
 
-header {
+#title {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 0.5rem 0 0 1rem;
+    text-align: left;
     background-color: #219ebc;
 }
 
-h1 {
-    margin: 0.5rem 0 0 1rem;
-    text-align: left;
-}
 #first-title-span {
     font-family: 'Newsreader', serif;
     font-size: 2.5rem;
@@ -112,6 +114,7 @@ form > span {
     flex-direction: row;
     flex-wrap: wrap;
     justify-content: space-evenly;
+    margin-top: 5rem;
 }
 
 .list-card {
@@ -153,7 +156,7 @@ form > span {
 
 #back-btn {
     position: fixed;
-    top: 1rem;
+    top: 3.5rem;
     left: .5rem;
 
     background-color: #f8961e;
@@ -353,14 +356,12 @@ i:hover {
 }
 
 @media screen and (min-width: 481px) {
-    header {
-        position: sticky;
-        top: 0;
-        left: 0;
-    }
     header > nav {
+        position: fixed;
         width: 100%;
         height: 3rem;
+        top: 4rem;
+        left: 0;
 
         background-color: #219ebc;
     }
@@ -398,6 +399,12 @@ i:hover {
         background-color: #f8961e;
     }
     
+    #display-section {
+        margin-top: 7rem;
+    }
+    #back-btn {
+        top: 4rem;
+    }
 }
 
 .off {

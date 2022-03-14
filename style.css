@@ -11,9 +11,23 @@ body {
     overflow-y: auto;
 }
 
+header {
+    background-color: #219ebc;
+}
+
 h1 {
-    margin: 1rem 0;
-    text-align: center;
+    margin: 0.5rem 0 0 1rem;
+    text-align: left;
+}
+#first-title-span {
+    font-family: 'Newsreader', serif;
+    font-size: 2.5rem;
+    color: #fff;
+}
+#second-title-span {
+    font-family: 'Permanent Marker', cursive;
+    font-size: 1.5rem;
+    color: #f8961e;
 }
 
 li {
@@ -30,23 +44,19 @@ section {
 
 #launch-section > button {
     display: block;
-    margin: 4rem auto 2rem auto;
+    margin: 6rem auto 2rem auto;
     padding: 1rem 1.5rem;
 
     background-color: #fff;
     color: #219ebc;
     border: 1px solid #219ebc;
     border-radius: 50px;
+    transition: .2s ease-in-out;
 }
 
 #launch-section > button:hover {
-    
-    background-color: white;
-    color: #f8961e;
-    border: 1px solid #f8961e;
-    transform: scale(1.1);
-    box-shadow: 3px 3px 5px #f8961e;
-    transition: .2s ease-in-out;
+    background-color: #219ebc;
+    color: #fff;    
 }
 
 form {
@@ -353,6 +363,15 @@ i:hover {
         height: 3rem;
 
         background-color: #219ebc;
+    }
+
+    #first-title-span {
+        font-size: 3.5rem;
+        color: #fff;
+    }
+    #second-title-span {
+        font-family: 'Permanent Marker', cursive;
+        color: #f8961e;
     }
 
     nav > ul {

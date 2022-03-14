@@ -121,7 +121,7 @@ const addToFav = async (event) => {
     const div = event.target.parentElement.parentElement;
     const title = div.lastChild.childNodes[1].innerText;
     //Replace buttons from book-card with new buttons and trim the spaces:
-    const newDiv = div.innerHTML.replace(/<div.+div>/gim, '<button type="button" id="unfav-btn">Fav</button>').replace(/\s\s+/gm, '');
+    const newDiv = div.innerHTML.replace(/<div.+div>/gim, '<i class="fa fa-heart" aria-hidden="true"></i>').replace(/\s\s+/gm, '');
     //Save favourites in local storage:
     const favourites = JSON.parse(localStorage.getItem('favourites'));
     favourites.push({
@@ -137,6 +137,7 @@ const addToFav = async (event) => {
             HTML: div.innerHTML
         })
     });
+    event.target.classList.toggle('liked');
 }
 
 const removeFromFav = async (event) => {
@@ -150,12 +151,8 @@ const removeFromFav = async (event) => {
         if (book.title === title) {
             favourites.splice(i, 1);
         }
-        console.log(book.title)
-        console.log(title)
     })
     localStorage.setItem('favourites', JSON.stringify(favourites));
-    // Remove from Firestore:
-    // const docRef = doc(db, 'users', auth.currentUser.email);
 
 }
 
@@ -173,12 +170,13 @@ const getOneList = async (id) => {
 
 //Function for displaying one books list:
 const displayOneList = async (list) => {
+
     list.forEach(book => {
         const div = document.createElement('div');
         div.setAttribute('id', `${list.list_name_encoded}`)
         div.classList.add('book-card');
         div.innerHTML = `<img src="${book.book_image}">
-        <div id="book-btns"><button type="button" class="buy-book-btn">Buy</button><button type="button" id="fav-btn">Fav</button></div>
+        <div id="book-btns"><i class="fa fa-heart" aria-hidden="true"></i><button type="button" class="buy-book-btn">Buy</button></div>
         <div id="book-info-container">
         <h2>#${book.rank} ${book.title}</h2>
                          <p>${book.author}</p>
@@ -187,9 +185,17 @@ const displayOneList = async (list) => {
                          <p>${book.description}</p>
                          </div>`;
         displaySection.appendChild(div);
-        const buttons = document.querySelectorAll('#fav-btn');
-        [...buttons].forEach(button => button.addEventListener('click', addToFav));
+
+        const buttons = document.querySelectorAll('.fa');
+        buttons[buttons.length - 1].addEventListener('click', addToFav);
+        const favourites = JSON.parse(localStorage.getItem('favourites'));
+        favourites.forEach(item => {
+            if (item.title === `#${book.rank} ${book.title}`) {
+                buttons[buttons.length - 1].classList.toggle('liked');
+            }
+        })
     });
+
 }
 
 // Wraper function for fetching and displaying the books list (it functions as an event listener)
@@ -339,8 +345,11 @@ myProfileBtn.addEventListener('click', () => {
         displaySection.appendChild(div);
     })
 
-    const buttons = document.querySelectorAll('#unfav-btn');
-    [...buttons].forEach(button => button.addEventListener('click', removeFromFav));
+    const buttons = document.querySelectorAll('.fa');
+    [...buttons].forEach(button => {
+        button.addEventListener('click', removeFromFav);
+        button.classList.toggle('liked');
+    });
 
     nav.classList.toggle('translated-menu');
 })

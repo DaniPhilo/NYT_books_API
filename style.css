@@ -234,6 +234,11 @@ form > span {
     font-size: 13px;
 }
 
+i {
+    color: grey;
+    margin: 0 1.5rem;
+}
+
 @media screen and (max-width: 480px) {
 
     nav {
@@ -358,4 +363,7 @@ form > span {
 }
 .scaled {
     transform: scale(0);
+}
+.liked {
+    color:rgb(201, 4, 63);
 }

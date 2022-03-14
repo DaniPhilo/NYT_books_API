@@ -111,7 +111,7 @@ const createBackBtn = () => {
     btn.setAttribute('id', 'back-btn');
     btn.innerText = 'Go Back';
     displaySection.insertBefore(btn, displaySection.firstChild);
-    btn.addEventListener('click', function() {
+    btn.addEventListener('click', function () {
         const previousDivs = document.querySelectorAll('#display-section > div');
         [...previousDivs].forEach(div => div.remove());
         getAndDisplayAllLists();
@@ -121,26 +121,44 @@ const createBackBtn = () => {
 
 // Add to favourites button event:
 const addToFav = async (event) => {
+
+    const favourites = JSON.parse(localStorage.getItem('favourites')) || [];
+
     const div = event.target.parentElement.parentElement;
     const title = div.lastChild.childNodes[1].innerText;
-    //Replace buttons from book-card with new buttons and trim the spaces:
-    const newDiv = div.innerHTML.replace(/\s\s+/gm, '').replace(/<div.id="book-btns".+(?=<div)/gim, '<i class="fa fa-heart" aria-hidden="true"></i>');
-    //Save favourites in local storage:
-    const favourites = JSON.parse(localStorage.getItem('favourites'));
-    favourites.push({
-        title: title,
-        HTML: newDiv
-    });
-    localStorage.setItem('favourites', JSON.stringify(favourites))
-    //Update doc in Firestore:
-    const docRef = doc(db, 'users', auth.currentUser.email);
-    await updateDoc(docRef, {
-        favourites: arrayUnion({
-            title: title,
-            HTML: div.innerHTML
+
+    // If button is 'liked' (has 'liked' class), it's been alredy stored and needs to be deleted:
+    if (event.target.classList.length > 2) {
+        favourites.forEach(async (item, index) => {
+            // If element is alredy saved in favourites, it's removed:
+            if (item.title === title) {
+                favourites.splice(index, 1);
+                localStorage.setItem('favourites', JSON.stringify(favourites));
+                event.target.classList.toggle('liked');
+            }
         })
-    });
-    event.target.classList.toggle('liked');
+    }
+    // If not, we added to favourites:
+    else {
+        //Replace buttons from book-card with new buttons and trim the spaces:
+        const newDiv = div.innerHTML.replace(/\s\s+/gm, '').replace(/<div.id="book-btns".+(?=<div)/gim, '<i class="fa fa-heart" aria-hidden="true"></i>');
+        //Save favourites in local storage:
+        favourites.push({
+            title: title,
+            HTML: newDiv
+        });
+        localStorage.setItem('favourites', JSON.stringify(favourites))
+
+        //Update doc in Firestore:
+        const docRef = doc(db, 'users', auth.currentUser.email);
+        await updateDoc(docRef, {
+            favourites: arrayUnion({
+                title: title,
+                HTML: div.innerHTML
+            })
+        });
+        event.target.classList.toggle('liked');
+    }
 }
 
 const removeFromFav = async (event) => {
@@ -150,9 +168,9 @@ const removeFromFav = async (event) => {
     div.remove();
     //Remove book from local storage:
     const favourites = JSON.parse(localStorage.getItem('favourites'));
-    favourites.forEach((book, i) => {
+    favourites.forEach((book, index) => {
         if (book.title === title) {
-            favourites.splice(i, 1);
+            favourites.splice(index, 1);
         }
     })
     localStorage.setItem('favourites', JSON.stringify(favourites));

@@ -44,10 +44,15 @@ section {
     width: 100%;
 }
 
+#launch-section {
+    margin-top: 4rem;
+}
+
 #launch-section > button {
     display: block;
     margin: 6rem auto 2rem auto;
     padding: 1rem 1.5rem;
+    cursor: pointer;
 
     background-color: #fff;
     color: #219ebc;
@@ -96,6 +101,7 @@ form > input[type="submit"] {
     color: white;
     border: 1px solid #219ebc;
     border-radius: 20px;
+    cursor: pointer;
 }
 form > input[type="submit"]:hover {
     background-color: white;
@@ -143,6 +149,7 @@ form > span {
     width: 50%;
     height: 2rem;
 
+    cursor: pointer;
     background-color: #f8961e;
     color: white;
     border: 1px solid #f8961e;
@@ -328,13 +335,14 @@ i:hover {
     
     li {
         width: 100%;
-        margin-bottom: 5rem;
+        margin-bottom: 4rem;
     }
     li:nth-of-type(1) {
         margin-left: .5rem;
-        margin-top: 1rem;
+        margin-top: 5rem;
         margin-bottom: 5rem;
     
+        text-align: center;
         color: white;
     }
     
@@ -349,6 +357,7 @@ i:hover {
         border-top: 1px solid white;
         border-bottom: 1px solid white;
         border-radius: 0;
+        cursor: pointer;
     }
     .translated-menu {
         transform: translateX(100%);
@@ -378,7 +387,7 @@ i:hover {
     nav > ul {
         display: flex;
         flex-direction: row;
-        justify-content: space-evenly;
+        justify-content: space-between;
 
         height: 100%;
     }
@@ -386,6 +395,12 @@ i:hover {
     ul > li {
         width: fit-content;
         height: 100%;
+        margin: 0 2rem;
+    }
+    ul > li:nth-of-type(1) {
+        color:#fff;
+        padding: 1rem 0;
+        margin-left: 1rem;        
     }
     li > button {
         width: 7rem;
@@ -394,6 +409,7 @@ i:hover {
         background-color: transparent;
         color: #fff;
         border: none;
+        cursor: pointer;
     }
     li > button:hover {
         background-color: #f8961e;

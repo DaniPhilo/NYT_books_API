@@ -62,7 +62,7 @@ const logIn = async (data) => {
     try {
         await signInWithEmailAndPassword(auth, data.logInEmail, data.logInPassword);
         await getDoc(doc(db, 'users', data.logInEmail))
-            .then(user => localStorage.setItem('favourites', JSON.stringify(user.data().favourites)));
+            .then(user => localStorage.setItem('favourites', (JSON.stringify(user.data().favourites || []))));
 
     }
     catch (error) {
@@ -118,7 +118,7 @@ const createBackBtn = () => {
 // Add to favourites button event:
 const addToFav = async (event) => {
     const div = event.target.parentElement.parentElement;
-    const title = div.firstChild.innerText;
+    const title = div.lastChild.childNodes[1].innerText;
     //Replace buttons from book-card with new buttons and trim the spaces:
     const newDiv = div.innerHTML.replace(/<div.+div>/gim, '<button type="button" id="unfav-btn">Fav</button>').replace(/\s\s+/gm, '');
     //Save favourites in local storage:
@@ -140,7 +140,7 @@ const addToFav = async (event) => {
 
 const removeFromFav = async (event) => {
     const div = event.target.parentElement;
-    const title = div.firstChild.innerText;
+    const title = div.lastChild.childNodes[0].innerText;
     //Remove card from DOM:
     div.remove();
     //Remove book from local storage:
@@ -149,6 +149,8 @@ const removeFromFav = async (event) => {
         if (book.title === title) {
             favourites.splice(i, 1);
         }
+        console.log(book.title)
+        console.log(title)
     })
     localStorage.setItem('favourites', JSON.stringify(favourites));
     // Remove from Firestore:

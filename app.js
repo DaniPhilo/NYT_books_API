@@ -18,6 +18,7 @@ const provider = new GoogleAuthProvider();
 
 const nav = document.querySelector('nav');
 const title = document.querySelector('h1');
+const userName = document.querySelector('#user-name');
 const launchSection = document.querySelector('#launch-section');
 const signUpForm = document.querySelector('#sign-up-form');
 const logInForm = document.querySelector('#log-in-form');
@@ -43,6 +44,7 @@ const signUp = async (data) => {
                 .then(() => updateProfile(auth.currentUser, {
                     displayName: data.signUpName
                 }))
+                .then(() => userName.innerText = `User: ${auth.currentUser.displayName}`)
             //Create document in Firestore
             await setDoc(doc(db, 'users', data.signUpEmail), {
                 userName: data.signUpName,
@@ -63,7 +65,8 @@ const logIn = async (data) => {
     try {
         await signInWithEmailAndPassword(auth, data.logInEmail, data.logInPassword);
         await getDoc(doc(db, 'users', data.logInEmail))
-            .then(user => localStorage.setItem('favourites', (JSON.stringify(user.data().favourites || []))));
+            .then(user => localStorage.setItem('favourites', (JSON.stringify(user.data().favourites || []))))
+            .then(() => userName.innerText = `User: ${auth.currentUser.displayName}`);
 
     }
     catch (error) {
@@ -108,11 +111,11 @@ const createBackBtn = () => {
     btn.setAttribute('id', 'back-btn');
     btn.innerText = 'Go Back';
     displaySection.insertBefore(btn, displaySection.firstChild);
-    btn.addEventListener('click', () => {
+    btn.addEventListener('click', function() {
         const previousDivs = document.querySelectorAll('#display-section > div');
         [...previousDivs].forEach(div => div.remove());
         getAndDisplayAllLists();
-        btn.remove();
+        this.remove();
     });
 }
 
@@ -122,7 +125,6 @@ const addToFav = async (event) => {
     const title = div.lastChild.childNodes[1].innerText;
     //Replace buttons from book-card with new buttons and trim the spaces:
     const newDiv = div.innerHTML.replace(/\s\s+/gm, '').replace(/<div.id="book-btns".+(?=<div)/gim, '<i class="fa fa-heart" aria-hidden="true"></i>');
-    console.log(newDiv)
     //Save favourites in local storage:
     const favourites = JSON.parse(localStorage.getItem('favourites'));
     favourites.push({
@@ -191,7 +193,7 @@ const displayOneList = async (list) => {
 
         const buttons = document.querySelectorAll('.fa');
         buttons[buttons.length - 1].addEventListener('click', addToFav);
-        const favourites = JSON.parse(localStorage.getItem('favourites'));
+        const favourites = JSON.parse(localStorage.getItem('favourites')) || [];
         favourites.forEach(item => {
             if (item.title === `#${book.rank} ${book.title}`) {
                 buttons[buttons.length - 1].classList.toggle('liked');
@@ -256,6 +258,10 @@ const getAndDisplayAllLists = async () => {
     else {
         const lists = JSON.parse(localStorage.getItem('lists'));
         displayAllLists(lists);
+    }
+    const backBtn = document.querySelector('#back-btn');
+    if (backBtn) {
+        backBtn.remove();
     }
 }
 

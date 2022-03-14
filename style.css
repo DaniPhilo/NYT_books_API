@@ -12,87 +12,12 @@ body {
 }
 
 h1 {
-    margin: 2rem 0;
+    margin: 1rem 0;
     text-align: center;
 }
 
-nav {
-    background-color: #219ebc;
-    width: 50%;
-    height: 100vh;
-
-    position: absolute;
-    top: 0;
-    right: 0;
-
-    transition: .5s ease-in-out;
-}
-
 li {
-    width: 100%;
-    margin-bottom: 5rem;
-}
-li:nth-of-type(1) {
-    margin-left: .5rem;
-    margin-top: 1rem;
-    margin-bottom: 5rem;
-
-    color: white;
-}
-
-li > button {
-    display: block;
-    margin: 0 auto 0 auto;
-    width: 60%;
-    padding: .5rem 0;
-    background-color: transparent;
-    color: white;
-    border: none;
-    border-top: 1px solid white;
-    border-bottom: 1px solid white;
-    border-radius: 0;
-}
-
-#hamburger-container {
-    position: absolute;
-    top: 1rem;
-    right: 1.5rem;
-    overflow: visible;
-
-    width: 30px;
-    height: 22px;
-    cursor: pointer;
-    z-index: 10;
-}
-
-#hamburger-btn {
-    display: block;
-    
-    height: 4px;
-    width: 30px;
-    margin-top: 9px;
-    background-color: #f8961e;
-    border-radius: 2px;
-}
-#hamburger-btn::before {
-    position: absolute;
-    margin-top: -8px;
-    
-    height: 4px;
-    width: 30px;
-    background-color: #f8961e;
-    border-radius: 2px;
-    content: '';
-}
-#hamburger-btn::after {
-    position: absolute;
-    margin-top: 8px;
-
-    height: 4px;
-    width: 30px;
-    background-color: #f8961e;
-    border-radius: 2px;
-    content: '';
+    list-style-type: none;
 }
 
 main {
@@ -303,13 +228,128 @@ form > input[type="submit"]:hover {
     font-size: 13px;
 }
 
+@media screen and (max-width: 480px) {
+
+    nav {
+        background-color: #219ebc;
+        width: 50%;
+        height: 100vh;
+    
+        position: absolute;
+        top: 0;
+        right: 0;
+    
+        transition: .5s ease-in-out;
+    }
+
+    #hamburger-container {
+        position: absolute;
+        top: 1rem;
+        right: 1.5rem;
+        overflow: visible;
+    
+        width: 30px;
+        height: 22px;
+        cursor: pointer;
+        z-index: 10;
+    }
+    
+    #hamburger-btn {
+        display: block;
+        
+        height: 4px;
+        width: 30px;
+        margin-top: 9px;
+        background-color: #f8961e;
+        border-radius: 2px;
+    }
+    #hamburger-btn::before {
+        position: absolute;
+        margin-top: -8px;
+        
+        height: 4px;
+        width: 30px;
+        background-color: #f8961e;
+        border-radius: 2px;
+        content: '';
+    }
+    #hamburger-btn::after {
+        position: absolute;
+        margin-top: 8px;
+    
+        height: 4px;
+        width: 30px;
+        background-color: #f8961e;
+        border-radius: 2px;
+        content: '';
+    }
+    
+    li {
+        width: 100%;
+        margin-bottom: 5rem;
+    }
+    li:nth-of-type(1) {
+        margin-left: .5rem;
+        margin-top: 1rem;
+        margin-bottom: 5rem;
+    
+        color: white;
+    }
+    
+    li > button {
+        display: block;
+        margin: 0 auto 0 auto;
+        width: 60%;
+        padding: .5rem 0;
+        background-color: transparent;
+        color: white;
+        border: none;
+        border-top: 1px solid white;
+        border-bottom: 1px solid white;
+        border-radius: 0;
+    }
+    .translated-menu {
+        transform: translateX(100%);
+    }
+}
+
+@media screen and (min-width: 481px) {
+    header > nav {
+        width: 100%;
+        height: 3rem;
+
+        background-color: #219ebc;
+    }
+
+    nav > ul {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-evenly;
+
+        height: 100%;
+    }
+
+    ul > li {
+        width: fit-content;
+        height: 100%;
+    }
+    li > button {
+        width: 7rem;
+        height: 100%;
+
+        background-color: transparent;
+        color: #fff;
+        border: none;
+    }
+    li > button:hover {
+        background-color: #f8961e;
+    }
+    
+}
 
 .off {
     display: none;
 }
 .scaled {
     transform: scale(0);
-}
-.translated-menu {
-    transform: translateX(100%);
 }

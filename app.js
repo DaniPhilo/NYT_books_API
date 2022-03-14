@@ -262,6 +262,7 @@ signUpForm.addEventListener('submit', async (event) => {
     launchSection.classList.toggle('off');
     signUpForm.classList.toggle('scaled');
     displaySection.classList.toggle('off');
+    nav.classList.toggle('off');
     menuBtn.classList.toggle('off');
     const data = {
         signUpName: event.target['sign-up-name'].value,
@@ -279,6 +280,7 @@ logInForm.addEventListener('submit', async (event) => {
     launchSection.classList.toggle('off');
     logInForm.classList.toggle('scaled');
     displaySection.classList.toggle('off');
+    nav.classList.toggle('off');
     menuBtn.classList.toggle('off');
     const data = {
         logInEmail: event.target['log-in-email'].value,
@@ -307,8 +309,11 @@ logOutBtn.addEventListener('click', () => {
     }
     displaySection.classList.toggle('off');
     launchSection.classList.toggle('off');
-    nav.classList.toggle('translated-menu');
+    nav.classList.toggle('off');
     menuBtn.classList.toggle('off');
+    if (nav.classList[0] !== 'translated-menu') {
+        nav.classList.toggle('translated-menu')
+    }
 });
 
 // My Profile button event:

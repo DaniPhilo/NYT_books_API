@@ -108,16 +108,20 @@ section {
     margin: 4rem auto 2rem auto;
     padding: 1rem 1.5rem;
 
-    background-color: #219ebc;
-    color: white;
+    background-color: #fff;
+    color: #219ebc;
     border: 1px solid #219ebc;
     border-radius: 50px;
 }
 
-button:hover {
+#launch-section > button:hover {
+    
     background-color: white;
-    color: #219ebc;
-    border: 1px solid #219ebc;
+    color: #f8961e;
+    border: 1px solid #f8961e;
+    transform: scale(1.1);
+    box-shadow: 3px 3px 5px #f8961e;
+    transition: .2s ease-in-out;
 }
 
 form {
@@ -179,7 +183,7 @@ form > input[type="submit"]:hover {
     box-shadow: 3px 3px 10px rgb(180, 178, 178);
 }
 .list-card > h2 {
-    margin: 1rem 0.5rem;
+    margin: 0 0.5rem;
     font-size: 1.5rem;
     border-bottom: 1px solid black;
 }
@@ -192,6 +196,16 @@ form > input[type="submit"]:hover {
 
     width: 50%;
     height: 2rem;
+
+    background-color: #f8961e;
+    color: white;
+    border: 1px solid #f8961e;
+    border-radius: 5px;
+}
+.list-card > button:hover {
+    background-color: #fff;
+    color: #f8961e;
+    border: 1px solid #f8961e;
 }
 
 #back-btn {

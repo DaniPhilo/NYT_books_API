@@ -88,6 +88,12 @@ form > input[type="submit"]:hover {
     color: #219ebc;
     border: 1px solid #219ebc;
 }
+form > span {
+    cursor: pointer;
+    position: absolute;
+    top: 5%;
+    right: 5%;
+}
 
 #display-section {
     display: flex;

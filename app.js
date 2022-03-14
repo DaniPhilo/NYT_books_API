@@ -21,6 +21,7 @@ const title = document.querySelector('h1');
 const launchSection = document.querySelector('#launch-section');
 const signUpForm = document.querySelector('#sign-up-form');
 const logInForm = document.querySelector('#log-in-form');
+const closeFormBtn = document.querySelectorAll('form > span');
 const displaySection = document.querySelector('#display-section');
 const toSignUpBtn = document.querySelector('#to-sign-up-btn');
 const toLogInBtn = document.querySelector('#to-log-in-btn');
@@ -291,6 +292,11 @@ logInForm.addEventListener('submit', async (event) => {
     await logIn(data);
     await getAndDisplayAllLists();
 });
+
+// Colse Form btn event:
+[...closeFormBtn].forEach(button => button.addEventListener('click', () => {
+    button.parentElement.classList.toggle('scaled');
+}))
 
 // Hamburger menu button event:
 menuBtn.addEventListener('click', () => {

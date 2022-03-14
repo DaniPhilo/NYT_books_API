@@ -24,6 +24,7 @@ const logInForm = document.querySelector('#log-in-form');
 const displaySection = document.querySelector('#display-section');
 const toSignUpBtn = document.querySelector('#to-sign-up-btn');
 const toLogInBtn = document.querySelector('#to-log-in-btn');
+const menuBtn = document.querySelector('#hamburger-container');
 const myProfileBtn = document.querySelector('#my-profile-btn');
 const logOutBtn = document.querySelector('#log-out-btn');
 
@@ -107,7 +108,7 @@ const createBackBtn = () => {
     btn.innerText = 'Go Back';
     displaySection.insertBefore(btn, displaySection.firstChild);
     btn.addEventListener('click', () => {
-        const previousDivs = document.querySelectorAll('div');
+        const previousDivs = document.querySelectorAll('#display-section > div');
         [...previousDivs].forEach(div => div.remove());
         getAndDisplayAllLists();
         btn.remove();
@@ -173,12 +174,15 @@ const displayOneList = async (list) => {
         const div = document.createElement('div');
         div.setAttribute('id', `${list.list_name_encoded}`)
         div.classList.add('book-card');
-        div.innerHTML = `<h2>#${book.rank} ${book.title}</h2>
+        div.innerHTML = `<img src="${book.book_image}">
+        <div id="book-btns"><button type="button" class="buy-book-btn">Buy</button><button type="button" id="fav-btn">Fav</button></div>
+        <div id="book-info-container">
+        <h2>#${book.rank} ${book.title}</h2>
                          <p>${book.author}</p>
-                         <img src="${book.book_image}">
+                         
                          <p>Weeks on list: ${book.weeks_on_list}</p>
                          <p>${book.description}</p>
-                         <div id="book-btns"><button type="button" class="buy-book-btn">Buy</button><button type="button" id="fav-btn">Fav</button></div>`;
+                         </div>`;
         displaySection.appendChild(div);
         const buttons = document.querySelectorAll('#fav-btn');
         [...buttons].forEach(button => button.addEventListener('click', addToFav));
@@ -187,7 +191,7 @@ const displayOneList = async (list) => {
 
 // Wraper function for fetching and displaying the books list (it functions as an event listener)
 const getAndDisplayOneList = async (event) => {
-    const previousDivs = document.querySelectorAll('div');
+    const previousDivs = document.querySelectorAll('#display-section > div');
     [...previousDivs].forEach(div => div.remove());
     // Parent element id of the button is the name of that list:
     const id = event.target.parentElement.getAttribute('id');
@@ -259,6 +263,7 @@ signUpForm.addEventListener('submit', async (event) => {
     signUpForm.classList.toggle('scaled');
     displaySection.classList.toggle('off');
     nav.classList.toggle('off');
+    menuBtn.classList.toggle('off');
     const data = {
         signUpName: event.target['sign-up-name'].value,
         signUpEmail: event.target['sign-up-email'].value,
@@ -276,6 +281,7 @@ logInForm.addEventListener('submit', async (event) => {
     logInForm.classList.toggle('scaled');
     displaySection.classList.toggle('off');
     nav.classList.toggle('off');
+    menuBtn.classList.toggle('off');
     const data = {
         logInEmail: event.target['log-in-email'].value,
         logInPassword: event.target['log-in-password'].value,
@@ -284,11 +290,16 @@ logInForm.addEventListener('submit', async (event) => {
     await getAndDisplayAllLists();
 });
 
+// Hamburger menu button event:
+menuBtn.addEventListener('click', () => {
+    nav.classList.toggle('translated-menu');
+})
+
 // Log Out button event:
 logOutBtn.addEventListener('click', () => {
     logOut();
     //If you log out from "My Profile" page, you have to destroy divs and goBack button, or they appear next time you log in:
-    const previousDivs = document.querySelectorAll('div') || false;
+    const previousDivs = document.querySelectorAll('#display-section > div') || false;
     if (previousDivs) {
         previousDivs.forEach(div => div.remove());
     }
@@ -299,11 +310,15 @@ logOutBtn.addEventListener('click', () => {
     displaySection.classList.toggle('off');
     launchSection.classList.toggle('off');
     nav.classList.toggle('off');
+    menuBtn.classList.toggle('off');
+    if (nav.classList[0] !== 'translated-menu') {
+        nav.classList.toggle('translated-menu')
+    }
 });
 
 // My Profile button event:
 myProfileBtn.addEventListener('click', () => {
-    const previousDivs = document.querySelectorAll('div');
+    const previousDivs = document.querySelectorAll('#display-section > div');
     previousDivs.forEach(div => div.remove());
 
     createBackBtn();
@@ -318,6 +333,8 @@ myProfileBtn.addEventListener('click', () => {
 
     const buttons = document.querySelectorAll('#unfav-btn');
     [...buttons].forEach(button => button.addEventListener('click', removeFromFav));
+
+    nav.classList.toggle('translated-menu');
 })
 
 isUserLogged();

@@ -223,7 +223,7 @@ form > span {
     align-items: center;
 }
 #book-btns > button {
-    width: 3rem;
+    width: 3.5rem;
     height: 1.5rem;
     margin: 0 1rem;
 
@@ -269,6 +269,7 @@ form > span {
 }
 
 i {
+    font-size: 1.5rem;
     color: grey;
     margin: 0 1.5rem;
     cursor: pointer;
@@ -428,6 +429,13 @@ i:hover {
 }
 .scaled {
     transform: scale(0);
+}
+.incorrect-sign-up {
+    position: absolute;
+    top: 0;
+
+    width: 100%;
+    color: red;
 }
 .liked {
     color:rgb(201, 4, 63);

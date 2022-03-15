@@ -34,30 +34,26 @@ const logOutBtn = document.querySelector('#log-out-btn');
 // *** FUNCTIONS ***
 // Sign Up function:
 const signUp = async (data) => {
-    if (data.signUpPassword === data.signUpPassword2 /* aquí los regex*/) {
-        try {
-            // Sign Up Process
-            await createUserWithEmailAndPassword(auth, data.signUpEmail, data.signUpPassword)
-                .then((userCredential) => {
-                    console.log('User registered');
-                })
-                .then(() => updateProfile(auth.currentUser, {
-                    displayName: data.signUpName
-                }))
-                .then(() => userName.innerText = `User: ${auth.currentUser.displayName}`)
-            //Create document in Firestore
-            await setDoc(doc(db, 'users', data.signUpEmail), {
-                userName: data.signUpName,
-                email: data.signUpEmail,
-                favourites: []
+
+    try {
+        // Sign Up Process
+        await createUserWithEmailAndPassword(auth, data.signUpEmail, data.signUpPassword)
+            .then((userCredential) => {
+                console.log('User registered');
             })
-        }
-        catch (error) {
-            console.log('Error: ', error)
-        }
+            .then(() => updateProfile(auth.currentUser, {
+                displayName: data.signUpName
+            }))
+            .then(() => userName.innerText = `User: ${auth.currentUser.displayName}`)
+        //Create document in Firestore
+        await setDoc(doc(db, 'users', data.signUpEmail), {
+            userName: data.signUpName,
+            email: data.signUpEmail,
+            favourites: []
+        })
     }
-    else {
-        alert('Different passwords');
+    catch (error) {
+        console.log('Error: ', error)
     }
 }
 // Log In function:
@@ -72,9 +68,7 @@ const logIn = async (data) => {
     catch (error) {
         const errorCode = error.code;
         const errorMessage = error.message;
-        console.log(errorCode)
-        console.log(errorMessage)
-        alert('Incorrect user or password')
+        return error
     }
 }
 // Log Out function:
@@ -295,35 +289,73 @@ toLogInBtn.addEventListener('click', () => {
 signUpForm.addEventListener('submit', async (event) => {
     event.preventDefault();
 
-    launchSection.classList.toggle('off');
-    signUpForm.classList.toggle('scaled');
-    displaySection.classList.toggle('off');
-    nav.classList.toggle('off');
-    menuBtn.classList.toggle('off');
     const data = {
         signUpName: event.target['sign-up-name'].value,
         signUpEmail: event.target['sign-up-email'].value,
         signUpPassword: event.target['sign-up-password'].value,
         signUpPassword2: event.target['sign-up-password2'].value,
     };
-    await signUp(data);
-    await getAndDisplayAllLists();
+
+    // Regex validation
+    if (data.signUpPassword === data.signUpPassword2
+        && /^[\w!@#$%&?\-_\.]{6,19}$/gi.test(data.signUpPassword)
+        && /^[\w!\-_\.&]+@[\w\-_\.\/]+\.[\w]{0,4}$/gi.test(data.signUpEmail)) {
+
+        launchSection.classList.toggle('off');
+        signUpForm.classList.toggle('scaled');
+        signUpForm.reset();
+        displaySection.classList.toggle('off');
+        nav.classList.toggle('off');
+        menuBtn.classList.toggle('off');
+        document.querySelectorAll('p').forEach(p => p.remove());
+
+        await signUp(data);
+        await getAndDisplayAllLists();
+    }
+
+    else {
+        const p = document.querySelector('p') || '';
+        if (!p) {
+            const p = document.createElement('p');
+            p.classList.add('incorrect-sign-up');
+            p.innerText = 'Incorrect e-mail or password.'
+            signUpForm.appendChild(p);
+        }
+    }
 });
 
 logInForm.addEventListener('submit', async (event) => {
     event.preventDefault();
 
-    launchSection.classList.toggle('off');
-    logInForm.classList.toggle('scaled');
-    displaySection.classList.toggle('off');
-    nav.classList.toggle('off');
-    menuBtn.classList.toggle('off');
     const data = {
         logInEmail: event.target['log-in-email'].value,
         logInPassword: event.target['log-in-password'].value,
     };
-    await logIn(data);
-    await getAndDisplayAllLists();
+
+    try {
+        await logIn(data)
+            .then(error => {
+                if(error) throw error
+            })
+        await getAndDisplayAllLists();
+        launchSection.classList.toggle('off');
+        logInForm.classList.toggle('scaled');
+        logInForm.reset();
+        displaySection.classList.toggle('off');
+        nav.classList.toggle('off');
+        menuBtn.classList.toggle('off');
+        document.querySelectorAll('p').forEach(p => p.remove());
+    }
+    catch (error) {
+        console.log('Error en login: ' + error)
+        const p = document.querySelector('p') || '';
+        if (!p) {
+            const p = document.createElement('p');
+            p.classList.add('incorrect-sign-up');
+            p.innerText = 'Incorrect e-mail or password.'
+            logInForm.appendChild(p);
+        }
+    }
 });
 
 // Colse Form btn event:
@@ -364,7 +396,7 @@ myProfileBtn.addEventListener('click', () => {
 
     createBackBtn();
 
-    const favourites = JSON.parse(localStorage.getItem('favourites'));
+    const favourites = JSON.parse(localStorage.getItem('favourites')) || [];
     favourites.forEach(book => {
         const div = document.createElement('div');
         div.classList.add('favourites-card');

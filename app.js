@@ -1,23 +1,17 @@
 // *** FIREBASE SETUP ***:
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.6/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile, deleteUser, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/9.6.6/firebase-auth.js";
-import { getFirestore, collection, doc, getDoc, getDocs, setDoc, updateDoc, deleteDoc, arrayUnion, arrayRemove, query, where, deleteField } from "https://www.gstatic.com/firebasejs/9.6.6/firebase-firestore.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from "https://www.gstatic.com/firebasejs/9.6.6/firebase-auth.js";
+import { getFirestore, doc, getDoc, setDoc, updateDoc} from "https://www.gstatic.com/firebasejs/9.6.6/firebase-firestore.js";
 
-const firebaseConfig = {
-    apiKey: "AIzaSyCLUor0R1QCzEdIo0FEqH3VUOXWoitujDQ",
-    authDomain: "test-19cf1.firebaseapp.com",
-    projectId: "test-19cf1",
-    storageBucket: "test-19cf1.appspot.com",
-    messagingSenderId: "407722304456",
-    appId: "1:407722304456:web:1dfe1d12f2b60e9a3816fd"
-};
+// *** PRIVATE INFO IMPORTS ***
+import { firebaseConfig, apiKey } from "./js/info.js"
+
 const app = initializeApp(firebaseConfig);
 const db = getFirestore();
 const auth = getAuth();
-const provider = new GoogleAuthProvider();
 
+// DOM elements that will be constantly called:
 const nav = document.querySelector('nav');
-const title = document.querySelector('h1');
 const userName = document.querySelector('#user-name');
 const launchSection = document.querySelector('#launch-section');
 const signUpForm = document.querySelector('#sign-up-form');
@@ -41,6 +35,7 @@ const signUp = async (data) => {
             .then((userCredential) => {
                 console.log('User registered');
             })
+            // Update display name of logged user so we could get his name any time in the future:
             .then(() => updateProfile(auth.currentUser, {
                 displayName: data.signUpName
             }))
@@ -60,6 +55,7 @@ const signUp = async (data) => {
 const logIn = async (data) => {
     try {
         await signInWithEmailAndPassword(auth, data.logInEmail, data.logInPassword);
+        // Each tiem user logs in, his favourites list is downloaded from Firestore, so we didn't have to fetch it every time user wants to access it in My Profile page:
         await getDoc(doc(db, 'users', data.logInEmail))
             .then(user => localStorage.setItem('favourites', (JSON.stringify(user.data().favourites || []))))
             .then(() => userName.innerText = `User: ${auth.currentUser.displayName}`);
@@ -74,6 +70,7 @@ const logIn = async (data) => {
 // Log Out function:
 const logOut = async () => {
     try {
+        // Each time user logs out, his favourites list is uploaded to Firestore, updating his profile:
         const favourites = JSON.parse(localStorage.getItem('favourites'));
         const docRef = await doc(db, 'users', auth.currentUser.email);
         await updateDoc(docRef, {
@@ -87,17 +84,6 @@ const logOut = async () => {
         console.log(error);
     }
 }
-// Login observer function:
-const isUserLogged = () => {
-    auth.onAuthStateChanged((user) => {
-        if (user) {
-            console.log('Logged user: ' + user.displayName);
-        }
-        else {
-            console.log('No logged user');
-        }
-    })
-}
 
 // Creating and displaying "Go Back" button:
 const createBackBtn = () => {
@@ -105,6 +91,7 @@ const createBackBtn = () => {
     btn.setAttribute('id', 'back-btn');
     btn.innerText = 'Go Back';
     displaySection.insertBefore(btn, displaySection.firstChild);
+    // The "go back" button deletes every card on the DOM, and fetches the main page again (it will be in local storage after the first log in, so it won't take much time):
     btn.addEventListener('click', function () {
         const previousDivs = document.querySelectorAll('#display-section > div');
         [...previousDivs].forEach(div => div.remove());
@@ -117,7 +104,7 @@ const createBackBtn = () => {
 const addToFav = async (event) => {
 
     const favourites = JSON.parse(localStorage.getItem('favourites')) || [];
-
+    // Select the card div(parent element of the fav button) and the title of the book:
     const div = event.target.parentElement.parentElement;
     const title = div.lastChild.childNodes[1].innerText;
 
@@ -132,7 +119,7 @@ const addToFav = async (event) => {
             }
         })
     }
-    // If not, we added to favourites:
+    // If not, we add it to favourites:
     else {
         //Replace buttons from book-card with new buttons and trim the spaces:
         const newDiv = div.innerHTML.replace(/\s\s+/gm, '').replace(/<div.id="book-btns".+(?=<div)/gim, '<i class="fa fa-heart" aria-hidden="true"></i>');
@@ -141,16 +128,7 @@ const addToFav = async (event) => {
             title: title,
             HTML: newDiv
         });
-        localStorage.setItem('favourites', JSON.stringify(favourites))
-
-        //Update doc in Firestore:
-        const docRef = doc(db, 'users', auth.currentUser.email);
-        await updateDoc(docRef, {
-            favourites: arrayUnion({
-                title: title,
-                HTML: div.innerHTML
-            })
-        });
+        localStorage.setItem('favourites', JSON.stringify(favourites));
         event.target.classList.toggle('liked');
     }
 }
@@ -168,13 +146,12 @@ const removeFromFav = async (event) => {
         }
     })
     localStorage.setItem('favourites', JSON.stringify(favourites));
-
 }
 
 //Function for fetching one books list:
 const getOneList = async (id) => {
     try {
-        let request = await fetch(`https://api.nytimes.com/svc/books/v3/lists/${id}.json?api-key=aIIJ5p83TsAOWEXASdgbJYiNjZ1kSNW0`);
+        let request = await fetch(`https://api.nytimes.com/svc/books/v3/lists/${id}.json?api-key=${apiKey}`);
         let response = await request.json();
         return response.results.books
     }
@@ -185,7 +162,7 @@ const getOneList = async (id) => {
 
 //Function for displaying one books list:
 const displayOneList = async (list) => {
-
+    // Creates a div for each book in the list:
     list.forEach(book => {
         const div = document.createElement('div');
         div.setAttribute('id', `${book.title}`)
@@ -202,16 +179,17 @@ const displayOneList = async (list) => {
                             <p>${book.description}</p>
                          </div>`;
         displaySection.appendChild(div);
-
+        // A fav button is added each time, with its event:
         const favIcons = document.querySelectorAll('.fa');
         favIcons[favIcons.length - 1].addEventListener('click', addToFav);
+        // If book is alredy in favs, the fav button is highlighted, so user knows it alredy saved as fav:
         const favourites = JSON.parse(localStorage.getItem('favourites')) || [];
         favourites.forEach(item => {
             if (item.title === `#${book.rank} ${book.title}`) {
                 favIcons[favIcons.length - 1].classList.toggle('liked');
             }
         })
-
+        // Buy button event to Amazon, that searches by ISBN-10:
         const buttons = document.querySelectorAll('.buy-book-btn');
         buttons[buttons.length - 1].addEventListener('click', () => {
             window.open(`https://www.amazon.es/dp/${book.isbns[0].isbn10}`)
@@ -219,30 +197,31 @@ const displayOneList = async (list) => {
     });
 
 }
-// Loading spinner for fetching books:
-const displaySpinner = () => {
+// Loading and removing spinner for fetching books:
+const toggleSpinner = () => {
     loadingSpinner.classList.toggle('off');
 }
-const removeSpinner = () => {
-    loadingSpinner.classList.toggle('off');
-}
-// Wraper function for fetching and displaying the books list (it functions as an event listener)
+
+// Wraper function for fetching and displaying the books list (it functions as an event listener) in the list card:
 const getAndDisplayOneList = async (event) => {
-    displaySpinner();
+    // Display loading spinner:
+    toggleSpinner();
+    // Removes previous lists from section:
     const previousDivs = document.querySelectorAll('#display-section > div');
     [...previousDivs].forEach(div => div.remove());
-    // Parent element id of the button is the name of that list:
+    // Parent element id of the button is the name of that list, and it's passed to the fetch function:
     const id = event.target.parentElement.getAttribute('id');
     const list = await getOneList(id);
     await displayOneList(list);
-    removeSpinner();
+    // Loading spinner out:
+    toggleSpinner();
     createBackBtn();
 }
 
 // Function for fetching all lists:
 const getAllLists = async () => {
     try {
-        let request = await fetch('https://api.nytimes.com/svc/books/v3/lists/names.json?api-key=aIIJ5p83TsAOWEXASdgbJYiNjZ1kSNW0');
+        let request = await fetch(`https://api.nytimes.com/svc/books/v3/lists/names.json?api-key=${apiKey}`);
         let response = await request.json();
         return response.results
     }
@@ -253,6 +232,7 @@ const getAllLists = async () => {
 
 //Function for displaying all lists:
 const displayAllLists = async (lists) => {
+    // Creates one div card for each list:
     lists.forEach(list => {
         const div = document.createElement('div');
         div.classList.add('list-card');
@@ -264,7 +244,7 @@ const displayAllLists = async (lists) => {
                          <button type="button" class="go-to-list-btn">Go</button>`;
         displaySection.appendChild(div);
 
-        // Set button event listeners:
+        // Set button event listeners for getting the books in the list:
         const buttons = document.querySelectorAll('.go-to-list-btn');
         [...buttons].forEach(button => button.addEventListener('click', getAndDisplayOneList))
     })
@@ -284,13 +264,14 @@ const getAndDisplayAllLists = async () => {
         const lists = JSON.parse(localStorage.getItem('lists'));
         displayAllLists(lists);
     }
+    // Since this is the main page, we don't need a back button here:
     const backBtn = document.querySelector('#back-btn');
     if (backBtn) {
         backBtn.remove();
     }
 }
 
-// Launch page button events:
+// Button events that lead to signup / login formularies:
 toSignUpBtn.addEventListener('click', () => {
     signUpForm.classList.toggle('scaled');
 });
@@ -298,7 +279,7 @@ toLogInBtn.addEventListener('click', () => {
     logInForm.classList.toggle('scaled');
 });
 
-// Sign up and Log in button events:
+// Sign up button event:
 signUpForm.addEventListener('submit', async (event) => {
     event.preventDefault();
 
@@ -309,7 +290,7 @@ signUpForm.addEventListener('submit', async (event) => {
         signUpPassword2: event.target['sign-up-password2'].value,
     };
 
-    // Regex validation
+    // Regex validation:
     if (data.signUpPassword === data.signUpPassword2
         && /^[\w!@#$%&?\-_\.]{6,19}$/gi.test(data.signUpPassword)
         && /^[\w!\-_\.&]+@[\w\-_\.\/]+\.[\w]{0,4}$/gi.test(data.signUpEmail)) {
@@ -327,6 +308,7 @@ signUpForm.addEventListener('submit', async (event) => {
     }
 
     else {
+        // Show error message:
         const p = document.querySelector('#sign-up-form > p') || '';
         if (!p) {
             const p = document.createElement('p');
@@ -337,6 +319,7 @@ signUpForm.addEventListener('submit', async (event) => {
     }
 });
 
+// Log in button event:
 logInForm.addEventListener('submit', async (event) => {
     event.preventDefault();
 
@@ -348,6 +331,7 @@ logInForm.addEventListener('submit', async (event) => {
     try {
         await logIn(data)
             .then(error => {
+                // If log in fails, we don't want to execute the code below, or then the formulary will be removed, so we throw an error and go directly to the cath:
                 if (error) throw error
             })
 
@@ -362,7 +346,8 @@ logInForm.addEventListener('submit', async (event) => {
         await getAndDisplayAllLists();
     }
     catch (error) {
-        console.log('Error en login: ' + error)
+        console.log('Error en login: ' + error);
+        // Display error message for user:
         const p = document.querySelector('#log-in-form > p') || '';
         if (!p) {
             const p = document.createElement('p');
@@ -373,12 +358,12 @@ logInForm.addEventListener('submit', async (event) => {
     }
 });
 
-// Colse Form btn event:
+// Close formuñary button event:
 [...closeFormBtn].forEach(button => button.addEventListener('click', () => {
     button.parentElement.classList.toggle('scaled');
 }))
 
-// Hamburger menu button event:
+// Hamburger menu button event for displaying the side menu in mobile screen:
 menuBtn.addEventListener('click', () => {
     nav.classList.toggle('translated-menu');
 })
@@ -386,7 +371,7 @@ menuBtn.addEventListener('click', () => {
 // Log Out button event:
 logOutBtn.addEventListener('click', () => {
     logOut();
-    //If you log out from "My Profile" page, you have to destroy divs and goBack button, or they appear next time you log in:
+    //If you log out from "My Profile" page, you have to destroy divs and goBack button, or they will appear next time you log in if the window is not refreshed:
     const previousDivs = document.querySelectorAll('#display-section > div') || false;
     if (previousDivs) {
         previousDivs.forEach(div => div.remove());
@@ -399,6 +384,7 @@ logOutBtn.addEventListener('click', () => {
     launchSection.classList.toggle('off');
     nav.classList.toggle('off');
     menuBtn.classList.toggle('off');
+    // If you log out from the menu, it remains displayed when you log in again, so it must be hidden if not:
     if (nav.classList[0] !== 'translated-menu') {
         nav.classList.toggle('translated-menu')
     }
@@ -406,11 +392,12 @@ logOutBtn.addEventListener('click', () => {
 
 // My Profile button event:
 myProfileBtn.addEventListener('click', () => {
+    // Removes previous list divs
     const previousDivs = document.querySelectorAll('#display-section > div');
     previousDivs.forEach(div => div.remove());
 
     createBackBtn();
-
+    // Fetches favourite books from local storage:
     const favourites = JSON.parse(localStorage.getItem('favourites')) || [];
     favourites.forEach(book => {
         const div = document.createElement('div');
@@ -418,7 +405,7 @@ myProfileBtn.addEventListener('click', () => {
         div.innerHTML = book.HTML;
         displaySection.appendChild(div);
     })
-
+    // Since we are alredy in favourites page, the like button here un-likes the book:
     const buttons = document.querySelectorAll('.fa');
     [...buttons].forEach(button => {
         button.addEventListener('click', removeFromFav);
@@ -427,6 +414,3 @@ myProfileBtn.addEventListener('click', () => {
 
     nav.classList.toggle('translated-menu');
 })
-
-isUserLogged();
-

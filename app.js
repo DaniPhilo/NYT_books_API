@@ -29,7 +29,7 @@ const toLogInBtn = document.querySelector('#to-log-in-btn');
 const menuBtn = document.querySelector('#hamburger-container');
 const myProfileBtn = document.querySelector('#my-profile-btn');
 const logOutBtn = document.querySelector('#log-out-btn');
-
+const loadingSpinner = document.querySelector('#lds-ring-container');
 
 // *** FUNCTIONS ***
 // Sign Up function:
@@ -188,13 +188,13 @@ const displayOneList = async (list) => {
 
     list.forEach(book => {
         const div = document.createElement('div');
-        div.setAttribute('id', `${list.list_name_encoded}`)
+        div.setAttribute('id', `${book.title}`)
         div.classList.add('book-card');
         div.innerHTML = `<img src="${book.book_image}">
                          <div id="book-btns">
                             <i class="fa fa-heart" aria-hidden="true"></i>
                             <button type="button" class="buy-book-btn">Buy</button>
-                        </div>
+                         </div>
                          <div id="book-info-container">
                             <h2>#${book.rank} ${book.title}</h2>
                             <p>${book.author}</p>
@@ -214,15 +214,23 @@ const displayOneList = async (list) => {
     });
 
 }
-
+// Loading spinner for fetching books:
+const displaySpinner = () => {
+    loadingSpinner.classList.toggle('off');
+}
+const removeSpinner = () => {
+    loadingSpinner.classList.toggle('off');
+}
 // Wraper function for fetching and displaying the books list (it functions as an event listener)
 const getAndDisplayOneList = async (event) => {
+    displaySpinner();
     const previousDivs = document.querySelectorAll('#display-section > div');
     [...previousDivs].forEach(div => div.remove());
     // Parent element id of the button is the name of that list:
     const id = event.target.parentElement.getAttribute('id');
     const list = await getOneList(id);
     await displayOneList(list);
+    removeSpinner();
     createBackBtn();
 }
 
@@ -338,6 +346,7 @@ logInForm.addEventListener('submit', async (event) => {
                 if(error) throw error
             })
         await getAndDisplayAllLists();
+
         launchSection.classList.toggle('off');
         logInForm.classList.toggle('scaled');
         logInForm.reset();
@@ -414,3 +423,4 @@ myProfileBtn.addEventListener('click', () => {
 })
 
 isUserLogged();
+

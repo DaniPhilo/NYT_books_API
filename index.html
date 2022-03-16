@@ -1,25 +1,86 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Newsreader:wght@600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Permanent+Marker&display=swap" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/61b8757a12.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="style.css">
     <title>NYT Books API</title>
 </head>
+
 <body>
     <header>
-        <nav>
+        <div class="off" id="hamburger-container">
+            <span id="hamburger-btn"></span>
+        </div>
+
+        <h1 id="title"><span id="first-title-span">NYT</span><span id="second-title-span">books_api</span></h1>
+
+        <nav class="translated-menu off">
+
+
             <ul>
-                <li>My Profile</li>
-                <li>Log Out</li>
+                <li id="user-name"></li>
+                <li><button type="button" id="my-profile-btn">My Profile</button></li>
+                <li><button type="button" id="log-out-btn">Log Out</button></li>
             </ul>
+
         </nav>
-        
-        <h1>Title</h1>
+
     </header>
+
     <main>
-        
+
+        <section id="launch-section">
+            <button type="button" id="to-sign-up-btn">Sign Up</button>
+            <button type="button" id="to-log-in-btn">Log in</button>
+
+            <form action="" class="scaled" id="sign-up-form">
+                <span>&#10006;</span>
+                <h2>Sign Up</h2>
+                <label for="sign-up-name">Name:</label>
+                <input type="text" name="sign-up-name" id="sign-up-name">
+
+                <label for="sign-up-email">E-mail:</label>
+                <input type="text" name="sign-up-email" id="sign-up-email">
+
+                <label for="sign-up-password">Password:</label>
+                <input type="password" name="sign-up-password" id="sign-up-password">
+
+                <label for="sign-up-password2">Repeat Password:</label>
+                <input type="password" name="sign-up-password2" id="sign-up-password2">
+
+                <input type="submit" id="sign-up-btn" value="Sign Up">
+            </form>
+
+            <form action="" class="scaled" id="log-in-form">
+                <span>&#10006;</span>
+                <h2>Log In</h2>
+                <label for="log-in-email">E-mail:</label>
+                <input type="text" name="log-in-email" id="log-in-email">
+
+                <label for="log-in-password">Password:</label>
+                <input type="password" name="log-in-password" id="log-in-password">
+
+                <input type="submit" id="log-in-btn" value="Log In">
+            </form>
+        </section>
+
+        <section class="off" id="display-section">
+            <!-- Loading spinner -->
+            <aside class="off" id="lds-ring-container"><div class="lds-ring"><div></div><div></div><div></div><div></div></div></aside>
+
+        </section>
+
     </main>
-    <script src="app.js"></script>
+    </main>
+    <script src="app.js" type="module"></script>
 </body>
+
 </html>

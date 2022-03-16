@@ -327,11 +327,11 @@ signUpForm.addEventListener('submit', async (event) => {
     }
 
     else {
-        const p = document.querySelector('p') || '';
+        const p = document.querySelector('#sign-up-form > p') || '';
         if (!p) {
             const p = document.createElement('p');
             p.classList.add('incorrect-sign-up');
-            p.innerText = 'Incorrect e-mail or password.'
+            p.innerText = 'Incorrect e-mail \n or password.'
             signUpForm.appendChild(p);
         }
     }
@@ -348,9 +348,8 @@ logInForm.addEventListener('submit', async (event) => {
     try {
         await logIn(data)
             .then(error => {
-                if(error) throw error
+                if (error) throw error
             })
-        await getAndDisplayAllLists();
 
         launchSection.classList.toggle('off');
         logInForm.classList.toggle('scaled');
@@ -359,14 +358,16 @@ logInForm.addEventListener('submit', async (event) => {
         nav.classList.toggle('off');
         menuBtn.classList.toggle('off');
         document.querySelectorAll('p').forEach(p => p.remove());
+
+        await getAndDisplayAllLists();
     }
     catch (error) {
         console.log('Error en login: ' + error)
-        const p = document.querySelector('p') || '';
+        const p = document.querySelector('#log-in-form > p') || '';
         if (!p) {
             const p = document.createElement('p');
             p.classList.add('incorrect-sign-up');
-            p.innerText = 'Incorrect e-mail or password.'
+            p.innerText = 'Incorrect e-mail \n or password.'
             logInForm.appendChild(p);
         }
     }

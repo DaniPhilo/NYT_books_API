@@ -203,13 +203,18 @@ const displayOneList = async (list) => {
                          </div>`;
         displaySection.appendChild(div);
 
-        const buttons = document.querySelectorAll('.fa');
-        buttons[buttons.length - 1].addEventListener('click', addToFav);
+        const favIcons = document.querySelectorAll('.fa');
+        favIcons[favIcons.length - 1].addEventListener('click', addToFav);
         const favourites = JSON.parse(localStorage.getItem('favourites')) || [];
         favourites.forEach(item => {
             if (item.title === `#${book.rank} ${book.title}`) {
-                buttons[buttons.length - 1].classList.toggle('liked');
+                favIcons[favIcons.length - 1].classList.toggle('liked');
             }
+        })
+
+        const buttons = document.querySelectorAll('.buy-book-btn');
+        buttons[buttons.length - 1].addEventListener('click', () => {
+            window.open(`https://www.amazon.es/dp/${book.isbns[0].isbn10}`)
         })
     });
 

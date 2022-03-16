@@ -11,9 +11,25 @@ body {
     overflow-y: auto;
 }
 
-h1 {
-    margin: 1rem 0;
-    text-align: center;
+#title {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 0.5rem 0 0 1rem;
+    text-align: left;
+    background-color: #219ebc;
+}
+
+#first-title-span {
+    font-family: 'Newsreader', serif;
+    font-size: 2.5rem;
+    color: #fff;
+}
+#second-title-span {
+    font-family: 'Permanent Marker', cursive;
+    font-size: 1.5rem;
+    color: #f8961e;
 }
 
 li {
@@ -28,25 +44,26 @@ section {
     width: 100%;
 }
 
+#launch-section {
+    margin-top: 4rem;
+}
+
 #launch-section > button {
     display: block;
-    margin: 4rem auto 2rem auto;
+    margin: 6rem auto 2rem auto;
     padding: 1rem 1.5rem;
+    cursor: pointer;
 
     background-color: #fff;
     color: #219ebc;
     border: 1px solid #219ebc;
     border-radius: 50px;
+    transition: .2s ease-in-out;
 }
 
 #launch-section > button:hover {
-    
-    background-color: white;
-    color: #f8961e;
-    border: 1px solid #f8961e;
-    transform: scale(1.1);
-    box-shadow: 3px 3px 5px #f8961e;
-    transition: .2s ease-in-out;
+    background-color: #219ebc;
+    color: #fff;    
 }
 
 form {
@@ -55,7 +72,9 @@ form {
     justify-content: center;
     align-items: center;
 
-    width: 60%;
+    width: calc(60% - ((100vw - 320px) / 2));
+    height: 70%;
+    /* max-width: 300px; */
     margin-left: auto;
     margin-right: auto;
     background-color: white;
@@ -64,8 +83,8 @@ form {
     box-shadow: 5px 5px 10px rgb(180, 178, 178);
 
     position: absolute;
-    top: 25%;
-    left: 20%;
+    top: 15%;
+    left: calc(20% + ((100vw - 320px) / 4));
 
     transition: .5s ease-in-out;
 }
@@ -82,11 +101,18 @@ form > input[type="submit"] {
     color: white;
     border: 1px solid #219ebc;
     border-radius: 20px;
+    cursor: pointer;
 }
 form > input[type="submit"]:hover {
     background-color: white;
     color: #219ebc;
     border: 1px solid #219ebc;
+}
+form > span {
+    cursor: pointer;
+    position: absolute;
+    top: 5%;
+    right: 5%;
 }
 
 #display-section {
@@ -94,6 +120,7 @@ form > input[type="submit"]:hover {
     flex-direction: row;
     flex-wrap: wrap;
     justify-content: space-evenly;
+    margin-top: 5rem;
 }
 
 .list-card {
@@ -122,6 +149,7 @@ form > input[type="submit"]:hover {
     width: 50%;
     height: 2rem;
 
+    cursor: pointer;
     background-color: #f8961e;
     color: white;
     border: 1px solid #f8961e;
@@ -135,7 +163,7 @@ form > input[type="submit"]:hover {
 
 #back-btn {
     position: fixed;
-    top: 1rem;
+    top: 3.5rem;
     left: .5rem;
 
     background-color: #f8961e;
@@ -195,7 +223,19 @@ form > input[type="submit"]:hover {
     align-items: center;
 }
 #book-btns > button {
+    width: 3.5rem;
+    height: 1.5rem;
     margin: 0 1rem;
+
+    cursor: pointer;
+    background-color: #f8961e;
+    color: #fff;
+    border: 1px solid #f8961e;
+    border-radius: 5px;
+}
+#book-btns > button:hover {
+    background-color: #fff;
+    color: #f8961e;
 }
 
 .favourites-card {
@@ -226,6 +266,16 @@ form > input[type="submit"]:hover {
 }
 .favourites-card > div > p {
     font-size: 13px;
+}
+
+i {
+    font-size: 1.5rem;
+    color: grey;
+    margin: 0 1.5rem;
+    cursor: pointer;
+}
+i:hover {
+    transform: scale(1.2);
 }
 
 @media screen and (max-width: 480px) {
@@ -286,13 +336,14 @@ form > input[type="submit"]:hover {
     
     li {
         width: 100%;
-        margin-bottom: 5rem;
+        margin-bottom: 4rem;
     }
     li:nth-of-type(1) {
         margin-left: .5rem;
-        margin-top: 1rem;
+        margin-top: 5rem;
         margin-bottom: 5rem;
     
+        text-align: center;
         color: white;
     }
     
@@ -307,6 +358,7 @@ form > input[type="submit"]:hover {
         border-top: 1px solid white;
         border-bottom: 1px solid white;
         border-radius: 0;
+        cursor: pointer;
     }
     .translated-menu {
         transform: translateX(100%);
@@ -315,16 +367,28 @@ form > input[type="submit"]:hover {
 
 @media screen and (min-width: 481px) {
     header > nav {
+        position: fixed;
         width: 100%;
         height: 3rem;
+        top: 4rem;
+        left: 0;
 
         background-color: #219ebc;
+    }
+
+    #first-title-span {
+        font-size: 3.5rem;
+        color: #fff;
+    }
+    #second-title-span {
+        font-family: 'Permanent Marker', cursive;
+        color: #f8961e;
     }
 
     nav > ul {
         display: flex;
         flex-direction: row;
-        justify-content: space-evenly;
+        justify-content: space-between;
 
         height: 100%;
     }
@@ -332,6 +396,12 @@ form > input[type="submit"]:hover {
     ul > li {
         width: fit-content;
         height: 100%;
+        margin: 0 2rem;
+    }
+    ul > li:nth-of-type(1) {
+        color:#fff;
+        padding: 1rem 0;
+        margin-left: 1rem;        
     }
     li > button {
         width: 7rem;
@@ -340,11 +410,60 @@ form > input[type="submit"]:hover {
         background-color: transparent;
         color: #fff;
         border: none;
+        cursor: pointer;
     }
     li > button:hover {
         background-color: #f8961e;
     }
     
+    #display-section {
+        margin-top: 9rem;
+    }
+    #back-btn {
+        top: 7.5rem;
+    }
+}
+
+#lds-ring-container {
+    position: fixed;
+    top: 45vh;
+    left: 45vw;
+    z-index: 10;
+}
+.lds-ring {
+    display: inline-block;
+    position: relative;
+    width: 80px;
+    height: 80px;
+}
+.lds-ring div {
+    box-sizing: border-box;
+    display: block;
+    position: absolute;
+    width: 64px;
+    height: 64px;
+    margin: 8px;
+    border: 8px solid #cef;
+    border-radius: 50%;
+    animation: lds-ring 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+    border-color: #cef transparent transparent transparent;
+}
+.lds-ring div:nth-child(1) {
+    animation-delay: -0.45s;
+}
+.lds-ring div:nth-child(2) {
+    animation-delay: -0.3s;
+}
+.lds-ring div:nth-child(3) {
+    animation-delay: -0.15s;
+}
+@keyframes lds-ring {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
 }
 
 .off {
@@ -352,4 +471,15 @@ form > input[type="submit"]:hover {
 }
 .scaled {
     transform: scale(0);
+}
+.incorrect-sign-up {
+    position: absolute;
+    bottom: 1rem;
+    text-align: center;
+    font-weight: bold;
+    width: 100%;
+    color: red;
+}
+.liked {
+    color:rgb(201, 4, 63);
 }
